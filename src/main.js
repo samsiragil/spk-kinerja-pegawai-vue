@@ -6,6 +6,7 @@ import router from './router'
 import store from './store/index.js'
 
 import './assets/css/bootstrap.min.css'
+import './assets/css/style.css'
 
 Vue.config.productionTip = false
 

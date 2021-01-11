@@ -20,6 +20,18 @@ const mutations = {
 		if(!record){
 			state.pegawai.push(payload)
 		}
+	},
+	updatePegawai(state,payload){
+		let record = state.pegawai.findIndex(x=> x.id == payload.id)
+		if(record != -1){
+			state.pegawai[record] = payload
+		}
+	},
+	deletePegawai(state,payload){
+		let record = state.pegawai.findIndex(x=> x.id == payload)
+		if(record != -1){
+			state.pegawai.splice(record,1)
+		}
 	}
 }
 
