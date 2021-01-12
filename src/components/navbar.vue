@@ -8,17 +8,25 @@
 			  </button>
 			  <div class="collapse navbar-collapse" id="navbarNav">
 			    <ul class="navbar-nav">
-			      <li class="nav-item active">
-			        <a class="nav-link" href="#">Pegawai <span class="sr-only">(current)</span></a>
+			      <li class="nav-item" :class="{'active':active_link == 'Pegawai'}">
+			      	<router-link to="/" class="nav-link">
+			      		Pegawai
+			      	</router-link>
 			      </li>
-			      <li class="nav-item">
-			        <a class="nav-link" href="#">Kriteria</a>
+			      <li class="nav-item" :class="{'active':active_link == 'Kriteria'}">
+			      	<router-link to="/kriteria" class="nav-link">
+			      		Kriteria 
+			      	</router-link>
 			      </li>
-			      <li class="nav-item">
-			        <a class="nav-link" href="#">Bobot Kriteria</a>
+			      <li class="nav-item" :class="{'active':active_link == 'BobotKriteria'}">
+			      	<router-link to="/bobot-kriteria" class="nav-link">
+			      		Bobot Kriteria 
+			      	</router-link>
 			      </li>
-			      <li class="nav-item">
-			        <a class="nav-link" href="#">Penilaian Akhir</a>
+			      <li class="nav-item" :class="{'active':active_link == 'PenilaianAkhir'}">
+			      	<router-link to="/" class="nav-link">
+			      		Penilaian Akhir 
+			      	</router-link>
 			      </li>
 			    </ul>
 			  </div>
@@ -27,5 +35,19 @@
 	</div>
 </template>
 <script>
-
+	export default {
+		data(){
+			return{
+				active_link: 'Pegawai'
+			}
+		},
+		watch:{
+			$route(to,from){
+				this.active_link = to.name
+      }
+		},
+		mounted(){
+			this.active_link = this.$route.name
+		}
+	}
 </script>

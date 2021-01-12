@@ -2,7 +2,7 @@
 	<div class="container mt-4">
 		<div class="w-100 border-bottom py-3 mb-4 d-table">
 			<h2 class="float-left">
-				Daftar Pegawai
+				Daftar Kriteria
 			</h2>
 			<button class="float-right btn btn-primary" @click="toggleModal('new')" >
 				Tambah
@@ -13,7 +13,7 @@
 		    <tr>
 		      <th scope="col" class="w-10">Kode</th>
 		      <th scope="col" class="w-30 text-left">Nama</th>
-		      <th scope="col" class="w-40 text-left">Jabatan - Tim</th>
+		      <th scope="col" class="w-40 text-left">Deskripsi</th>
 		      <th scope="col" class="w-20">Action</th>
 		    </tr>
 		  </thead>
@@ -27,18 +27,18 @@
 		    </tr>
 		    <template v-else>
 			    <tr v-if="list.length == 0">
-			      <td colspan="5" class="text-center">Masih belum ada daftar pegawai</td>
+			      <td colspan="5" class="text-center">Masih belum ada daftar kriteria</td>
 			    </tr>
 			    <template v-else>
-				    <tr v-for="(pegawai,index) in list">
-				      <td class="w-10">{{pegawai.code}}</td>
-				      <td class="w-30 text-left">{{pegawai.name}}</td>
-				      <td class="w-40 text-left">{{pegawai.position}} - {{pegawai.team}}</td>
+				    <tr v-for="(kriteria,index) in list">
+				      <td class="w-10">{{kriteria.code}}</td>
+				      <td class="w-30 text-left">{{kriteria.name}}</td>
+				      <td class="w-40 text-left">{{kriteria.desc}}</td>
 				      <td class="w-20">
-				      	<button class="btn btn-warning btn-sm" @click="showEditForm(pegawai)">
+				      	<button class="btn btn-warning btn-sm" @click="showEditForm(kriteria)">
 				      		Ubah
 				      	</button>
-				      	<button class="btn btn-danger btn-sm" @click="showDeletePopup(pegawai.id)">
+				      	<button class="btn btn-danger btn-sm" @click="showDeletePopup(kriteria.id)">
 				      		Hapus
 				      	</button>
 				      </td>
@@ -79,20 +79,10 @@
 							    <input v-model="form.name" type="text" class="form-control">
 							  </div>
 		      		</div>
-		      		<div class="col-6">
+		      		<div class="col-12">
 				      	<div class="form-group">
-							    <label>Jabatan</label>
-							    <select class="form-control" v-model="form.position" >
-							      <option v-for="position in positions" :value="position">{{position}}</option>
-							    </select>
-							  </div>
-		      		</div>
-		      		<div class="col-6">
-				      	<div class="form-group">
-							    <label>Tim</label>
-							    <select class="form-control" v-model="form.team" >
-							      <option v-for="team in teams" :value="team">{{team}}</option>
-							    </select>
+							    <label>Deskripsi</label>
+							    <textarea v-model="form.desc" class="form-control" rows="2"></textarea>
 							  </div>
 		      		</div>
 		      	</div>
@@ -138,14 +128,11 @@
 			return{
 				list: [],
 				is_load: true,
-				teams: ['Development','Bisnis'],
-				positions: ['Manager','Support Officer','Mobile Developer','Web Developer', 'Designer'],
 				form:{
 					id: '',
 					code: '',
 					name: '',
-					position: '',
-					team: ''
+					desc: ''
 				},
 				is_code_valid: true,
 				is_update: false,
@@ -155,7 +142,7 @@
 		},
 		computed:{
 			form_valid(){
-				if(this.form.code == '' || this.form.name == '' || this.form.position == '' || this.form.team == '' || this.is_code_valid == false){
+				if(this.form.code == '' || this.form.name == '' || this.form.desc == '' || this.is_code_valid == false){
 					return false
 				}
 				return true
@@ -165,12 +152,12 @@
 			this.loadData()
 		},
 		methods:{
-			...mapGetters(['getPegawai']),
-			...mapMutations(['setPegawai','deletePegawai','updatePegawai']),
+			...mapGetters(['getKriteria']),
+			...mapMutations(['setKriteria','deleteKriteria','updateKriteria']),
 			loadData(){
 				this.is_load = true
 				setTimeout(()=>{
-					this.list = this.getPegawai()
+					this.list = this.getKriteria()
 					this.is_load = false
 				},1000);
 			},	
@@ -184,14 +171,18 @@
 				$('#formModal').modal('toggle')
 			},
 			checkCode(){
-				if(this.getPegawai().length == 0){
+				if(this.getKriteria().length == 0){
 					this.is_code_valid = true
 				}else{
 					this.is_code_valid = true
-					for(let i=0;i < this.getPegawai().length;i++){
-						if(this.getPegawai()[i].code == this.form.code){
-							if(this.is_update && this.active_code != this.form.code){
+					for(let i=0;i < this.getKriteria().length;i++){
+						if(this.getKriteria()[i].code == this.form.code){
+							if(!this.is_update){
 								this.is_code_valid = false
+							}else{
+								if(this.active_code != this.form.code){
+									this.is_code_valid = false
+								}
 							}
 							break;
 						}
@@ -200,10 +191,10 @@
 			},
 			submit(){
 				if(this.is_update){
-					this.updatePegawai(this.form)
+					this.updateKriteria(this.form)
 				}else{
 					this.form.id = moment().valueOf()
-					this.setPegawai(this.form)
+					this.setKriteria(this.form)
 				}
 				this.toggleModal()
 				this.loadData()
@@ -218,19 +209,19 @@
 				}
 				this.active_code = ''
 				this.active_id = ''
+				this.is_code_valid = true
 			},
 			showDeletePopup(id){
 				this.active_id = id
 				$('#confirm').modal('show')
 			},
 			deleteSelectedPegawai(){
-				this.deletePegawai(this.active_id)
+				this.deleteKriteria(this.active_id)
 				$('#confirm').modal('hide')
 				this.loadData()
 			},
 			showEditForm(data){
 				this.is_update = true
-				console.log("form : ", data)
 				this.form = Object.assign({}, data)
 				this.active_code = data.code
 				this.toggleModal()
