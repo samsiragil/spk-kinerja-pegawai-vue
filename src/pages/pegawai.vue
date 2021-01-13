@@ -10,122 +10,122 @@
 		</div>
 		<table class="table table-bordered">
 		  <thead>
-		    <tr>
-		      <th scope="col" class="w-10">Kode</th>
-		      <th scope="col" class="w-30 text-left">Nama</th>
-		      <th scope="col" class="w-40 text-left">Jabatan - Tim</th>
-		      <th scope="col" class="w-20">Action</th>
-		    </tr>
+			<tr>
+			  <th scope="col" class="w-10 text-center">Kode</th>
+			  <th scope="col" class="w-30 text-left">Nama</th>
+			  <th scope="col" class="w-40 text-left">Jabatan - Tim</th>
+			  <th scope="col" class="w-20 text-center">Action</th>
+			</tr>
 		  </thead>
 		  <tbody>
-		  	<tr v-if="is_load">
-		      <td colspan="5" class="text-center">
-		      	<div class="spinner-border text-info" role="status">
+			<tr v-if="is_load">
+			  <td colspan="5" class="text-center">
+				<div class="spinner-border text-info" role="status">
 						  <span class="sr-only">Loading...</span>
 						</div>
-		      </td>
-		    </tr>
-		    <template v-else>
-			    <tr v-if="list.length == 0">
-			      <td colspan="5" class="text-center">Masih belum ada daftar pegawai</td>
-			    </tr>
-			    <template v-else>
-				    <tr v-for="(pegawai,index) in list">
-				      <td class="w-10">{{pegawai.code}}</td>
-				      <td class="w-30 text-left">{{pegawai.name}}</td>
-				      <td class="w-40 text-left">{{pegawai.position}} - {{pegawai.team}}</td>
-				      <td class="w-20">
-				      	<button class="btn btn-warning btn-sm" @click="showEditForm(pegawai)">
-				      		Ubah
-				      	</button>
-				      	<button class="btn btn-danger btn-sm" @click="showDeletePopup(pegawai.id)">
-				      		Hapus
-				      	</button>
-				      </td>
-				    </tr>
-			    </template>
-		    </template>
+			  </td>
+			</tr>
+			<template v-else>
+				<tr v-if="list.length == 0">
+				  <td colspan="5" class="text-center">Masih belum ada daftar pegawai</td>
+				</tr>
+				<template v-else>
+					<tr v-for="(pegawai,index) in list">
+					  <td class="w-10 text-center">{{pegawai.code}}</td>
+					  <td class="w-30 text-left">{{pegawai.name}}</td>
+					  <td class="w-40 text-left">{{pegawai.position}} - {{pegawai.team}}</td>
+					  <td class="w-20 text-center">
+						<button class="btn btn-warning btn-sm" @click="showEditForm(pegawai)">
+							Ubah
+						</button>
+						<button class="btn btn-danger btn-sm" @click="showDeletePopup(pegawai.id)">
+							Hapus
+						</button>
+					  </td>
+					</tr>
+				</template>
+			</template>
 		  </tbody>
 		</table>
 		<!-- form -->
 		<div class="modal fade" id="formModal" tabindex="-1" aria-labelledby="formModal" aria-hidden="true">
 		  <div class="modal-dialog modal-lg">
-		    <div class="modal-content">
-		      <div class="modal-header">
-		        <h5 class="modal-title" id="formModal">Tambah Data</h5>
-		        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-		          <span aria-hidden="true">&times;</span>
-		        </button>
-		      </div>
-		      <div class="modal-body text-left">
-		      	<div class="row">
-		      		<div class="col-6">
-				        <div class="form-group">
-							    <label>Kode</label>
-							    <input v-model="form.code" @blur="checkCode" type="text" class="form-control" minlength="3" maxlength="3">
-							    <small class="form-text" :class="{'text-danger': !is_code_valid,'text-muted': is_code_valid}">
-							    	<template v-if="is_code_valid">
-							    		Kode harus 3 karakter. Contoh : A01
-							    	</template>
-							    	<template v-else>
-							    		Kode sudah digunakan 
-							    	</template>
-							    </small>
+			<div class="modal-content">
+			  <div class="modal-header">
+				<h5 class="modal-title" id="formModal">Tambah Data</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				  <span aria-hidden="true">&times;</span>
+				</button>
+			  </div>
+			  <div class="modal-body text-left">
+				<div class="row">
+					<div class="col-6">
+						<div class="form-group">
+								<label>Kode</label>
+								<input v-model="form.code" @blur="checkCode" type="text" class="form-control" minlength="3" maxlength="3">
+								<small class="form-text" :class="{'text-danger': !is_code_valid,'text-muted': is_code_valid}">
+									<template v-if="is_code_valid">
+										Kode harus 3 karakter. Contoh : A01
+									</template>
+									<template v-else>
+										Kode sudah digunakan 
+									</template>
+								</small>
 							  </div>
-		      		</div>
-		      		<div class="col-6">
-				      	<div class="form-group">
-							    <label>Nama</label>
-							    <input v-model="form.name" type="text" class="form-control">
+					</div>
+					<div class="col-6">
+						<div class="form-group">
+								<label>Nama</label>
+								<input v-model="form.name" type="text" class="form-control">
 							  </div>
-		      		</div>
-		      		<div class="col-6">
-				      	<div class="form-group">
-							    <label>Jabatan</label>
-							    <select class="form-control" v-model="form.position" >
-							      <option v-for="position in positions" :value="position">{{position}}</option>
-							    </select>
+					</div>
+					<div class="col-6">
+						<div class="form-group">
+								<label>Jabatan</label>
+								<select class="form-control" v-model="form.position" >
+								  <option v-for="position in positions" :value="position">{{position}}</option>
+								</select>
 							  </div>
-		      		</div>
-		      		<div class="col-6">
-				      	<div class="form-group">
-							    <label>Tim</label>
-							    <select class="form-control" v-model="form.team" >
-							      <option v-for="team in teams" :value="team">{{team}}</option>
-							    </select>
+					</div>
+					<div class="col-6">
+						<div class="form-group">
+								<label>Tim</label>
+								<select class="form-control" v-model="form.team" >
+								  <option v-for="team in teams" :value="team">{{team}}</option>
+								</select>
 							  </div>
-		      		</div>
-		      	</div>
-		      </div>
-		      <div class="modal-footer">
-		        <button type="button" class="btn btn-secondary" @click="toggleModal" >Batal</button>
-		        <button type="button" class="btn btn-primary" :disabled="!form_valid" @click="submit">Simpan</button>
-		      </div>
-		    </div>
+					</div>
+				</div>
+			  </div>
+			  <div class="modal-footer">
+				<button type="button" class="btn btn-secondary" @click="toggleModal" >Batal</button>
+				<button type="button" class="btn btn-primary" :disabled="!form_valid" @click="submit">Simpan</button>
+			  </div>
+			</div>
 		  </div>
 		</div>
 
 		<div class="modal fade" id="confirm" tabindex="-1" aria-labelledby="confirm" aria-hidden="true">
 		  <div class="modal-dialog modal-sm">
-		    <div class="modal-content">
-		      <div class="modal-header">
-		        <h5 class="modal-title" id="formModal">Konfirmasi</h5>
-		        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-		          <span aria-hidden="true">&times;</span>
-		        </button>
-		      </div>
-		      <div class="modal-body text-center">
-		      	<p class="mb-4 w-100">Apakah anda yakin ingin menghapus data ini?</p>
-		      	<div class="w-100">
-		      		<button class="btn btn-secondary btn-sm" data-dismiss="modal">
-			      		Batal
-			      	</button>
-			      	<button class="btn btn-danger btn-sm" @click="deleteSelectedPegawai">
-			      		Hapus
-			      	</button>
-		      	</div>
-		      </div>
-		    </div>
+			<div class="modal-content">
+			  <div class="modal-header">
+				<h5 class="modal-title" id="formModal">Konfirmasi</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				  <span aria-hidden="true">&times;</span>
+				</button>
+			  </div>
+			  <div class="modal-body text-center">
+				<p class="mb-4 w-100">Apakah anda yakin ingin menghapus data ini?</p>
+				<div class="w-100">
+					<button class="btn btn-secondary btn-sm" data-dismiss="modal">
+						Batal
+					</button>
+					<button class="btn btn-danger btn-sm" @click="deleteSelectedPegawai">
+						Hapus
+					</button>
+				</div>
+			  </div>
+			</div>
 		  </div>
 		</div>
 	</div>

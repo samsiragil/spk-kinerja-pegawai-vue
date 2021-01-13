@@ -1,4 +1,4 @@
-<template>
+ text-center<template>
 	<div class="container mt-4">
 		<div class="w-100 border-bottom py-3 mb-4 d-table">
 			<h2 class="float-left">
@@ -11,10 +11,10 @@
 		<table class="table table-bordered">
 		  <thead>
 		    <tr>
-		      <th scope="col" class="w-10">Kode</th>
+		      <th scope="col" class="w-10 text-center">Kode</th>
 		      <th scope="col" class="w-30 text-left">Nama</th>
 		      <th scope="col" class="w-40 text-left">Deskripsi</th>
-		      <th scope="col" class="w-20">Action</th>
+		      <th scope="col" class="w-20 text-center">Action</th>
 		    </tr>
 		  </thead>
 		  <tbody>
@@ -31,10 +31,10 @@
 			    </tr>
 			    <template v-else>
 				    <tr v-for="(kriteria,index) in list">
-				      <td class="w-10">{{kriteria.code}}</td>
+				      <td class="w-10 text-center">{{kriteria.code}}</td>
 				      <td class="w-30 text-left">{{kriteria.name}}</td>
 				      <td class="w-40 text-left">{{kriteria.desc}}</td>
-				      <td class="w-20">
+				      <td class="w-20 text-center">
 				      	<button class="btn btn-warning btn-sm" @click="showEditForm(kriteria)">
 				      		Ubah
 				      	</button>
