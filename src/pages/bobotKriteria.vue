@@ -57,35 +57,67 @@
 				</div>
 				<div class="row">
 					<div class="col-7">
-						<p class="font-weight-bold">Penentuan Prioritas Secara Berpasangan :</p>
-						<table class="table table-bordered">
-						  <thead>
-						    <tr>
-						      <th scope="col" class="w-40 text-center">Kriteria A</th>
-						      <th scope="col" class="w-20 text-center">Nilai Pembanding</th>
-						      <th scope="col" class="w-40 text-center">Kriteria B</th>
-						    </tr>
-						  </thead>
-						  <tbody>
-						  	<tr v-for="(pair,index) in kriteria_pasangan">
-						  		<td class="w-40">{{pair.a.code}} - {{pair.a.name}}</td>
-						  		<td class="w-20">
-						  			<div class="form-group mb-2">
-									    <select class="form-control" v-model="pair.score">
-									      <option v-for="n in 9" :value="n">{{n}}</option>
-									    </select>
-									  </div>
-									  <div class="text-center w-100">
-									  	<img @click="swapPairKriteria(index)" src="../assets/img/swap.png" class="cursor-pointer" height="20">
-									  </div>
-						  		</td>
-						  		<td class="w-40">{{pair.b.code}} - {{pair.b.name}}</td>
-						  	</tr>
-						  </tbody>
-						</table>
-						<button class="btn btn-info" @click="submitPriorityKriteria()">
-							Proses Data
-						</button>
+						<template v-if="table_pair_is_load">
+							<div class="spinner-border text-info" role="status">
+							  <span class="sr-only">Loading...</span>
+							</div>
+						</template>
+						<template v-else>
+							<template v-if="pairwise_comparisons.length == 0">
+								<p class="font-weight-bold">Penentuan Prioritas Secara Berpasangan :</p>
+								<table class="table table-bordered">
+								  <thead>
+								    <tr>
+								      <th scope="col" class="w-40 text-center">Kriteria A</th>
+								      <th scope="col" class="w-20 text-center">Nilai Pembanding</th>
+								      <th scope="col" class="w-40 text-center">Kriteria B</th>
+								    </tr>
+								  </thead>
+								  <tbody>
+								  	<tr v-for="(pair,index) in kriteria_pasangan">
+								  		<td class="w-40">{{pair.a.code}} - {{pair.a.name}}</td>
+								  		<td class="w-20">
+								  			<div class="form-group mb-2">
+											    <select class="form-control" v-model="pair.score">
+											      <option v-for="n in 9" :value="n">{{n}}</option>
+											    </select>
+											  </div>
+											  <div class="text-center w-100">
+											  	<img @click="swapPairKriteria(index)" src="../assets/img/swap.png" class="cursor-pointer" height="20">
+											  </div>
+								  		</td>
+								  		<td class="w-40">{{pair.b.code}} - {{pair.b.name}}</td>
+								  	</tr>
+								  </tbody>
+								</table>
+								<button class="btn btn-info mb-4" @click="submitPriorityKriteria()">
+									Proses Data
+								</button>
+							</template>
+							<template v-else>
+								<p class="font-weight-bold" @click="normalizationTable">Matriks Perbandingan Kriteria</p>
+								<button class="btn btn-warning mb-3" @click="resubmitPriorityKriteria()">
+									Hitung ulang bobot kriteria
+								</button>
+								<table class="table table-bordered">
+									<thead>
+										<tr>
+											<th scope="col" v-for="first_col in pairwise_comparisons[0]">{{first_col}}</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr v-for="(row,row_index) in pairwise_comparisons">
+											<template v-if="row_index != 0">
+												<template v-for="(col,col_index) in row">
+													<th v-if="col_index == 0" scope="row" class="w-10">{{col}}</th>
+													<td v-else>{{col}}</td>
+												</template>
+											</template>
+										</tr>
+									</tbody>
+								</table>
+							</template>
+						</template>
 					</div>
 					<div class="col-5">
 						<p class="font-weight-bold">Skala Saaty :</p>
@@ -208,7 +240,10 @@
 						score: '2,4,6,8',
 						desc: "Nilai tengah diantara nilai berdekatan (intermediate value)"
 					},
-				]
+				],
+				table_pair_is_load: false,
+				only_number_table: [],
+				table_normalization: []
 			}
 		},
 		computed:{
@@ -218,16 +253,22 @@
 				}else{
 					return true
 				}
+			},
+			pairwise_comparisons(){
+				return this.getTablePairKriteria()
 			}
 		},
 		mounted(){
 			if(this.getSelectedKriteria().length > 0){
 				this.definePairKriteria()
 			}
+			if(this.pairwise_comparisons.length > 0){
+				this.onlyNumberTable()
+			}
 		},
 		methods:{
-			...mapGetters(['getKriteria','getSelectedKriteria']),
-			...mapMutations(['setSelectedKriteria']),
+			...mapGetters(['getKriteria','getSelectedKriteria','getTablePairKriteria']),
+			...mapMutations(['setSelectedKriteria','setTablePairKriteria']),
 			submitSelectedKriteria(){
 				this.setSelectedKriteria(this.selected_kriteria)
 				this.definePairKriteria()
@@ -257,6 +298,7 @@
 			},
 			resetSelectedKriteria(){
 				this.setSelectedKriteria([])
+				this.setTablePairKriteria([])
 			},
 			swapPairKriteria(index){
 				let selected = this.kriteria_pasangan[index]
@@ -266,6 +308,7 @@
 				this.kriteria_pasangan[index].b = a
 			},
 			submitPriorityKriteria(){
+				this.table_pair_kriteria = []
 				let x = this.getSelectedKriteria().length+1
 				let vuex_data = this.getSelectedKriteria()
 				for(let i=0;i < x;i++){
@@ -311,8 +354,9 @@
 												if(x_data[k].a.code == this.table_pair_kriteria[0][i]){
 													data.push(x_data[k].score)
 												}else{
-													let y_data = "1/"+x_data[k].score
-													data.push(y_data)
+													// let y_data = "1/"+x_data[k].score
+													let y_data = 1/x_data[k].score
+													data.push(parseFloat(y_data).toFixed(2))
 												}
 											}
 										}
@@ -332,6 +376,58 @@
 					}
 				}
 				console.table(this.table_pair_kriteria)
+				this.table_pair_is_load = true
+				setTimeout(() => {
+					this.setTablePairKriteria(this.table_pair_kriteria)
+					this.table_pair_is_load = false
+				},2000)
+			},
+			onlyNumberTable(){
+				let data = this.getTablePairKriteria()
+				for(let i =0; i < data.length;i++){
+					if(i != 0){
+					let row = []
+						for(let j=0; j < data[i].length;j++){
+							if(j != 0){
+								row.push(data[i][j])
+							}
+						}
+					this.only_number_table.push(row)
+					}
+				}
+				// console.log("only_number_table :" , this.only_number_table)
+				console.table(this.only_number_table)
+			},
+			normalizationTable(){
+				this.table_normalization = []
+				let data = this.only_number_table
+				for(let g =0; g < data.length;g++){
+					let data_row = {
+						code: this.getTablePairKriteria()[0][g+1],
+						arr: []
+					}
+					for(let h =0; h < data[g].length;h++){
+						let arr_col = []
+						
+						for(let i =0; i < data.length;i++){
+							for(let j=0; j < data[i].length;j++){
+								let calculate = data[g][h] * data[i][j]
+								arr_col.push(calculate)
+							}
+						}
+						data_row.arr.push(arr_col)
+
+					}
+					this.table_normalization.push(data_row)
+				}
+				console.log("table_normalization : ", this.table_normalization)
+			},
+			resubmitPriorityKriteria(){
+				this.table_pair_is_load = true
+				setTimeout(() => {
+					this.setTablePairKriteria([])
+					this.table_pair_is_load = false
+				},2000)
 			}
 		}
 	}

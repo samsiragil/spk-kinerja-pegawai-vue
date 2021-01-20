@@ -57,13 +57,15 @@ const state = {
 			desc: 'Dalam lingkungan pekerjaan, kedisiplinan sangatlah penting.'
 		}
 	],
-	selected_kriteria: []
+	selected_kriteria: [],
+	table_pair_krtieria: []
 }
 
 const getters = {
 	getPegawai: state => state.pegawai,
 	getKriteria: state => state.kriteria,
-	getSelectedKriteria: state => state.selected_kriteria
+	getSelectedKriteria: state => state.selected_kriteria,
+	getTablePairKriteria: state => state.table_pair_krtieria
 }
 
 const mutations = {
@@ -105,6 +107,9 @@ const mutations = {
 	},
 	setSelectedKriteria(state,payload){
 		state.selected_kriteria = payload
+	},
+	setTablePairKriteria(state,payload){
+		state.table_pair_krtieria = payload
 	}
 }
 
