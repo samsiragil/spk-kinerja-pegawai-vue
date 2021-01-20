@@ -1,3 +1,3 @@
 module.exports = {
-	publicPath: '/spk-kinerja-pegawai-vue/'
+	module.exports = {    publicPath: process.env.NODE_ENV === 'production'    ? '/spk-kinerja-pegawai-vue/'    : '/'}
 }
